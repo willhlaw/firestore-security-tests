@@ -1,0 +1,11 @@
+{
+  "extends": [
+    "pretty-standard",
+    "plugin:import/errors"
+  ],
+  "parser": "babel-eslint",
+  "rules": {
+    "no-duplicate-imports": 0,
+    "import/no-duplicates": 2
+  }
+}

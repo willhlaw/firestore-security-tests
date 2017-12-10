@@ -1,0 +1,46 @@
+{
+  "name": "firestore-security-tests",
+  "version": "1.0.0",
+  "description": "Setup and run tests to verify Firestore security rules",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "build": "babel src/ -d lib/",
+    "lint": "eslint ./src/**/*.js",
+    "prettier": "prettier --write --single-quote ./src/**/*.js",
+    "preversion": "npm test && npm run build && git add -f lib",
+    "flow": "flow",
+    "precommit": "lint-staged"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/willhlaw/firestore-security-rules.git"
+  },
+  "keywords": [
+    "firestore",
+    "security",
+    "rules",
+    "test"
+  ],
+  "author": "willhlaw",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/willhlaw/firestore-security-rules/issues"
+  },
+  "homepage": "https://github.com/willhlaw/firestore-security-rules#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.0.0-beta.34",
+    "@babel/core": "^7.0.0-beta.34",
+    "@babel/preset-env": "^7.0.0-beta.34",
+    "@babel/preset-flow": "^7.0.0-beta.34",
+    "babel-eslint": "^8.0.3",
+    "eslint": "^4.13.0",
+    "eslint-config-pretty-standard": "^1.1.0",
+    "eslint-plugin-import": "^2.8.0",
+    "flow-bin": "^0.61.0",
+    "husky": "^0.14.3",
+    "jest": "^21.2.1",
+    "lint-staged": "^6.0.0",
+    "prettier": "^1.9.1"
+  }
+}

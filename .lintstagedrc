@@ -1,0 +1,13 @@
+{
+  "linters": {
+    "src/**/*.js": [
+      "eslint",
+      "prettier --write --single-quote",
+      "git add"
+    ]
+  },
+  "globoptions": {
+    "matchbase": true,
+    "nonegate": true
+  }
+}
