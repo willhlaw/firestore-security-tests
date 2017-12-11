@@ -1,11 +1,10 @@
 {
   "name": "firestore-security-tests",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Setup and run tests to verify Firestore security rules",
   "main": "/lib/index.js",
   "scripts": {
-    "test":
-      "cross-env GOOGLE_APPLICATION_CREDENTIALS=./creds.json babel-node src/index.spec.js",
+    "test": "cross-env GOOGLE_APPLICATION_CREDENTIALS=./creds.json babel-node src/index.spec.js",
     "start": "node lib/index.js",
     "build": "babel src/ -d lib/",
     "lint": "eslint ./src/**/*.js",
@@ -18,7 +17,12 @@
     "type": "git",
     "url": "git+https://github.com/willhlaw/firestore-security-rules.git"
   },
-  "keywords": ["firestore", "security", "rules", "test"],
+  "keywords": [
+    "firestore",
+    "security",
+    "rules",
+    "test"
+  ],
   "author": "willhlaw",
   "license": "MIT",
   "bugs": {
