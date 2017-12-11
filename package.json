@@ -1,10 +1,11 @@
 {
   "name": "firestore-security-tests",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Setup and run tests to verify Firestore security rules",
-  "main": "index.js",
+  "main": "/lib/index.js",
   "scripts": {
-    "test": "test",
+    "test": "cross-env GOOGLE_APPLICATION_CREDENTIALS=./creds.json babel-node src/index.spec.js",
+    "start": "node lib/index.js",
     "build": "babel src/ -d lib/",
     "lint": "eslint ./src/**/*.js",
     "prettier": "prettier --write --single-quote ./src/**/*.js",
@@ -28,12 +29,17 @@
     "url": "https://github.com/willhlaw/firestore-security-rules/issues"
   },
   "homepage": "https://github.com/willhlaw/firestore-security-rules#readme",
+  "dependencies": {
+    "googleapis": "^23.0.0"
+  },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.34",
     "@babel/core": "^7.0.0-beta.34",
+    "@babel/node": "^7.0.0-beta.34",
     "@babel/preset-env": "^7.0.0-beta.34",
     "@babel/preset-flow": "^7.0.0-beta.34",
     "babel-eslint": "^8.0.3",
+    "cross-env": "^5.1.1",
     "eslint": "^4.13.0",
     "eslint-config-pretty-standard": "^1.1.0",
     "eslint-plugin-import": "^2.8.0",

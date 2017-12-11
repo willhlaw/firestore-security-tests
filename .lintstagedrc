@@ -6,7 +6,7 @@
       "git add"
     ]
   },
-  "globoptions": {
+  "globOptions": {
     "matchbase": true,
     "nonegate": true
   }
