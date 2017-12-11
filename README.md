@@ -41,50 +41,48 @@ To use the Firebase Admin SDKs, you'll need a Firebase project, a service accoun
 
 After you click the button, a JSON file containing your service account's credentials will be downloaded. The environment variable **GOOGLE_APPLICATION_CREDENTIALS** will need to be the path to this JSON file.
 
-### 2. Create a _testResource.json_ file
+### 2. Create a testResource object
 
 There are two top-level objects [source](https://www.any-api.com/googleapis_com/firebaserules/docs/Definitions/Source) and [testSuite](https://www.any-api.com/googleapis_com/firebaserules/docs/Definitions/TestSuite). _source_ contains information about the Rules you want to test (copy and paste your current Firestore/Storage rules here), while _testSuite_ contains an array of test cases to run against the provided source.
 
 Below is a contrived example you can use:
 
 ```js
-  {
-    source: {
-      files: [
-        {
-          name: 'firestore.rules',
-          content: `service cloud.firestore {
+var testResourceObj = {
+  source: {
+    files: [
+      {
+        name: 'firestore.rules',
+        content: `service cloud.firestore {
               match /databases/{database}/documents {match /{document=**} {allow read: if request.auth.uid != '7QLCpgSZ5CdaVhj52GC50jhe1o02-INVALID' allow write: if false
                 }
               }
             }`
-        }
-      ]
-    },
-    testSuite: {
-      testCases: [
-        {
-          expectation: 'ALLOW',
-          request: {
-            auth: {
-              uid: '7QLCpgSZ5CdaVhj52GC50jhe1o02'
-            },
-            path: '/databases/(default)/documents/licenses/abcd',
-            method: 'get'
+      }
+    ]
+  },
+  testSuite: {
+    testCases: [
+      {
+        expectation: 'ALLOW',
+        request: {
+          auth: {
+            uid: '7QLCpgSZ5CdaVhj52GC50jhe1o02'
           },
-          functionMocks: [
-            {
-              function: 'get',
-              args: [
-                { exact_value: '/databases/(default)/documents/users/123' }
-              ],
-              result: { value: { data: { accountId: 'abcd' } } }
-            }
-          ]
-        }
-      ]
-    }
+          path: '/databases/(default)/documents/licenses/abcd',
+          method: 'get'
+        },
+        functionMocks: [
+          {
+            function: 'get',
+            args: [{ exact_value: '/databases/(default)/documents/users/123' }],
+            result: { value: { data: { accountId: 'abcd' } } }
+          }
+        ]
+      }
+    ]
   }
+};
 ```
 
 ### 3. Create a _test.js_ file
@@ -92,9 +90,43 @@ Below is a contrived example you can use:
 ```js
 var testSecurityRules = require('firestore-security-tests').testSecurityRules;
 
-var testResourceObj = require('testResource.json');
+var testResourceObj = {
+  source: {
+    files: [
+      {
+        name: 'firestore.rules',
+        content: `service cloud.firestore {
+              match /databases/{database}/documents {match /{document=**} {allow read: if request.auth.uid != '7QLCpgSZ5CdaVhj52GC50jhe1o02-INVALID' allow write: if false
+                }
+              }
+            }`
+      }
+    ]
+  },
+  testSuite: {
+    testCases: [
+      {
+        expectation: 'ALLOW',
+        request: {
+          auth: {
+            uid: '7QLCpgSZ5CdaVhj52GC50jhe1o02'
+          },
+          path: '/databases/(default)/documents/licenses/abcd',
+          method: 'get'
+        },
+        functionMocks: [
+          {
+            function: 'get',
+            args: [{ exact_value: '/databases/(default)/documents/users/123' }],
+            result: { value: { data: { accountId: 'abcd' } } }
+          }
+        ]
+      }
+    ]
+  }
+};
 
-testSecurityRules(printResults, testResourceObject);
+testSecurityRules(printResults, testResourceObj);
 
 function printResults(resultsObj) {
   var projectId = resultsObj.projectId,
