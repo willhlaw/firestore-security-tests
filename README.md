@@ -1,11 +1,10 @@
 # firestore-security-tests
 
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
-TODO: Put more badges here.
 
 > Setup and run tests to verify Firestore security rules
 
-TODO: Fill out this long description.
+This library provides programmatic access to test Firestore security rules.
 
 ## Table of Contents
 
@@ -17,6 +16,8 @@ TODO: Fill out this long description.
 * [License](#license)
 
 ## Background
+
+Firebase Real Time DataBase has an interactive UI for testing rules, but Firestore does not. Furthermore, the community have built libraries to programmatically test security rules Firebase RTDB, but nothing exists for Firestore. See [this issue](https://github.com/firebase/bolt/issues/216) that gives additional background and inspired this library.
 
 ## Install
 
