@@ -2,7 +2,7 @@
   "name": "firestore-security-tests",
   "version": "1.0.2",
   "description": "Setup and run tests to verify Firestore security rules",
-  "main": "index.js",
+  "main": "/lib/index.js",
   "scripts": {
     "test":
       "cross-env GOOGLE_APPLICATION_CREDENTIALS=./creds.json babel-node src/index.spec.js",
