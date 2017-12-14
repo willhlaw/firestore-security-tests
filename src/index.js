@@ -1,4 +1,5 @@
 import google from 'googleapis';
+import utils from './resourceObj/utils';
 
 // This method looks for the GCLOUD_PROJECT and GOOGLE_APPLICATION_CREDENTIALS
 // environment variables.
@@ -6,7 +7,8 @@ function getAuthObj(
   callback,
   keyCredentialsPath = '../' + process.env.GOOGLE_APPLICATION_CREDENTIALS
 ) {
-  console.time('Authenticating');
+  logger({ type: 'time', msg: 'Authenticating' });
+
   const key = require(keyCredentialsPath);
   const jwtClient = new google.auth.JWT(
     key.client_email,
@@ -17,19 +19,20 @@ function getAuthObj(
   );
   const projectId = process.env.GCLOUD_PROJECT || key.project_id;
 
-  jwtClient.authorize(function(err, tokens) {
-    if (err) {
-      throw new Error(
-        `Could not authorize jwtClient. Check GOOGLE_APPLICATION_CREDENTIALS 
+  jwtClient.authorize(function(error, tokens) {
+    if (error) {
+      const errMsg = `Could not authorize jwtClient. Check GOOGLE_APPLICATION_CREDENTIALS 
         env variable for correct path to key credentials and check that 
         key credentials are for the firebase-adminsdk service account 
         (created from "Add Firebase to your app" step on 
         https://firebase.google.com/docs/admin/setup) or check that
-        the key credentials have similar scope to firebase-adminsdk.`,
-        err
-      );
+        the key credentials have similar scope to firebase-adminsdk.`;
+      logger({ type: 'error', msg: [errMsg, error] });
+      return callback({ errMsg, error });
     }
-    console.timeEnd('Authenticating');
+
+    logger({ type: 'timeEnd', msg: 'Authenticating' });
+
     callback({ authClient: jwtClient, projectId });
   });
 }
@@ -47,7 +50,7 @@ function firebaserulesTest(
 
   const resourceObj = { source, testSuite };
 
-  console.time('Testing rules');
+  logger({ type: 'time', msg: 'Testing rules' });
 
   firebaserules.projects.test({ name, resource: resourceObj }, null, function(
     error,
@@ -55,20 +58,28 @@ function firebaserulesTest(
     incomingMessage
   ) {
     if (error) {
-      var errMsg = new Error(
-        `Error calling firebaserules API. Check project name and resourceObj 
-          structure for validity.`,
-        error
-      );
-      console.error(errMsg);
-      return errMsg;
+      const errMsg =
+        'Error calling firebaserules API. Check project name and ' +
+        ' resourceObj structure for validity.';
+      logger({ type: 'error', msg: ['\n\n', errMsg, '\n\n', error] });
+      return callback({ errMsg, error });
     }
-    console.timeEnd('Testing rules');
+
+    logger({ type: 'timeEnd', msg: 'Testing rules' });
+
     const { testResults: [...testCases] } = results;
-    const testResults = testCases.map(({ state }, idx) => {
-      const { expectation, request } = resourceObj.testSuite.testCases[idx];
-      const passed = state === 'SUCCESS';
-      const result = passed ? 'PASSED' : 'FAILED';
+
+    const testResults = testCases.map(({ state }: { state: String }, idx) => {
+      const {
+        expectation,
+        request
+      }: {
+        expectation: String,
+        request: Object
+      } = resourceObj.testSuite.testCases[idx];
+
+      const passed: Boolean = state === 'SUCCESS';
+      const result: String = passed ? 'PASSED' : 'FAILED';
 
       return {
         result,
@@ -93,22 +104,52 @@ function firebaserulesTest(
 
 function testSecurityRules(
   callback,
-  { keyCredentialsPath, source, testSuite }
+  { keyCredentialsPath, source, testSuite },
+  options: { verbose: Boolean } = {}
 ) {
+  setVerboseMode(options.verbose);
+
   getAuthObj(runTests, keyCredentialsPath);
 
-  function runTests({ authClient, projectId }) {
+  function runTests(authObj) {
+    if (authObj.error) {
+      return callback(authObj);
+    }
+
     return firebaserulesTest(callback, {
-      authClient,
-      projectId,
+      ...authObj,
       source,
       testSuite
     });
   }
 }
 
+let verboseMode = false;
+
+function setVerboseMode(value: Boolean = true): null {
+  verboseMode = value;
+}
+
+function logger({
+  type = 'log',
+  msg
+}: {
+  type: String,
+  msg: String | Array<String>
+}): null {
+  if (!verboseMode) {
+    return;
+  }
+
+  const logFn = console[type] || console.log;
+  (msg instanceof Array ? msg : [msg]).forEach(m => logFn(m));
+}
+
 export default {
-  testSecurityRules
+  getAuthObj,
+  firebaserulesTest,
+  testSecurityRules,
+  utils
 };
 
-export { testSecurityRules };
+export { getAuthObj, firebaserulesTest, testSecurityRules, utils };

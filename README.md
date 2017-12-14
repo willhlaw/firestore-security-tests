@@ -126,11 +126,18 @@ var testResourceObj = {
   }
 };
 
-testSecurityRules(printResults, testResourceObj);
+testSecurityRules(printResults, testResourceObj, { verbose: true });
 
 function printResults(resultsObj) {
   var projectId = resultsObj.projectId,
-    testResults = resultsObj.testResults;
+    testResults = resultsObj.testResults,
+    error = resultsObj.error,
+    errMsg = resultsObj.errMsg;
+
+  if (error) {
+    return console.error('\n\ntestSecurityRules ERRORED:\n\n', errMsg, error);
+  }
+
   console.log('\nTest results for '.concat(projectId, ':\n'));
   testResults.forEach(function(testResult) {
     return console.log(testResult.toString());

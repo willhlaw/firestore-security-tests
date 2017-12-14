@@ -1,3 +1,4 @@
 {
-  "presets": ["@babel/env", "@babel/flow"]
+  "presets": ["@babel/env", "@babel/flow"],
+  "plugins": ["transform-object-rest-spread"]
 }
