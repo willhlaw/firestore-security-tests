@@ -1,6 +1,6 @@
 {
   "name": "firestore-security-tests",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Setup and run tests to verify Firestore security rules",
   "main": "lib/index.js",
   "scripts": {
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/willhlaw/firestore-security-rules.git"
+    "url": "git+https://github.com/willhlaw/firestore-security-tests.git"
   },
   "keywords": [
     "firestore",
@@ -26,9 +26,9 @@
   "author": "willhlaw",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/willhlaw/firestore-security-rules/issues"
+    "url": "https://github.com/willhlaw/firestore-security-tests/issues"
   },
-  "homepage": "https://github.com/willhlaw/firestore-security-rules#readme",
+  "homepage": "https://github.com/willhlaw/firestore-security-tests#readme",
   "dependencies": {
     "googleapis": "^23.0.0"
   },
