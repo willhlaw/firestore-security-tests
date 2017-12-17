@@ -1,6 +1,6 @@
 {
   "name": "firestore-security-tests",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Setup and run tests to verify Firestore security rules",
   "main": "lib/index.js",
   "scripts": {
