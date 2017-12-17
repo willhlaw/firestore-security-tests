@@ -1,15 +1,32 @@
 import google from 'googleapis';
 import utils from './resourceObj/utils';
+import path from 'path';
 
 // This method looks for the GCLOUD_PROJECT and GOOGLE_APPLICATION_CREDENTIALS
 // environment variables.
 function getAuthObj(
   callback,
-  keyCredentialsPath = '../' + process.env.GOOGLE_APPLICATION_CREDENTIALS
+  keyCredentialsPath = process.env.GOOGLE_APPLICATION_CREDENTIALS
 ) {
   logger({ type: 'time', msg: 'Authenticating' });
 
-  const key = require(keyCredentialsPath);
+  const thisPath = __dirname;
+  const toTopLevelDirectoryRelativePathStr = thisPath.includes('node_modules')
+    ? '../../../'
+    : '../';
+
+  const resolvedKeyCredentialsPath = path.resolve(
+    thisPath,
+    toTopLevelDirectoryRelativePathStr,
+    keyCredentialsPath
+  );
+
+  logger({
+    type: 'log',
+    msg: `Resolved key credentials path: ${resolvedKeyCredentialsPath}`
+  });
+
+  const key = require(resolvedKeyCredentialsPath);
   const jwtClient = new google.auth.JWT(
     key.client_email,
     null,
