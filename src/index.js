@@ -6,7 +6,7 @@ import path from 'path';
 // environment variables.
 function getAuthObj(
   callback,
-  keyCredentialsPath = process.env.GOOGLE_APPLICATION_CREDENTIALS
+  { keyCredentialsPath = process.env.GOOGLE_APPLICATION_CREDENTIALS, creds }
 ) {
   logger({ type: 'time', msg: 'Authenticating' });
 
@@ -15,18 +15,20 @@ function getAuthObj(
     ? '../../../'
     : '../';
 
-  const resolvedKeyCredentialsPath = path.resolve(
-    thisPath,
-    toTopLevelDirectoryRelativePathStr,
-    keyCredentialsPath
-  );
+  const resolvedKeyCredentialsPath = !creds
+    ? path.resolve(
+        thisPath,
+        toTopLevelDirectoryRelativePathStr,
+        keyCredentialsPath
+      )
+    : null;
 
   logger({
     type: 'log',
     msg: `Resolved key credentials path: ${resolvedKeyCredentialsPath}`
   });
 
-  const key = require(resolvedKeyCredentialsPath);
+  const key = creds || require(resolvedKeyCredentialsPath);
   const jwtClient = new google.auth.JWT(
     key.client_email,
     null,
@@ -121,12 +123,12 @@ function firebaserulesTest(
 
 function testSecurityRules(
   callback,
-  { keyCredentialsPath, source, testSuite },
+  { keyCredentialsPath, creds, source, testSuite },
   options: { verbose: Boolean } = {}
 ) {
   setVerboseMode(options.verbose);
 
-  getAuthObj(runTests, keyCredentialsPath);
+  getAuthObj(runTests, { keyCredentialsPath, creds });
 
   function runTests(authObj) {
     if (authObj.error) {
