@@ -22,7 +22,7 @@ Firebase Real Time DataBase has an interactive UI for testing rules, but Firesto
 ## Install
 
 ```sh
-  npm install firestore-security-rules --save-dev
+  npm install firestore-security-tests --save-dev
 ```
 
 ## Usage
