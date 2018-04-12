@@ -64,7 +64,7 @@ var testResourceObj = {
   testSuite: {
     testCases: [
       {
-        expectation: 'ALLOW',
+        expectation: 'ALLOW', // Can be 'ALLOW' or 'DENY'
         request: {
           auth: {
             uid: '7QLCpgSZ5CdaVhj52GC50jhe1o02'
