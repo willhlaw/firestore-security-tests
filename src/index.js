@@ -88,34 +88,56 @@ function firebaserulesTest(
 
     const { testResults: [...testCases] } = results;
 
-    const testResults = testCases.map(({ state }: { state: String }, idx) => {
-      const {
-        expectation,
-        request
-      }: {
-        expectation: String,
-        request: Object
-      } = resourceObj.testSuite.testCases[idx];
+    const testResults = testCases.map(
+      (
+        testCase: {
+          state: string,
+          debugMessages: Array,
+          functionCalls: Object
+        },
+        idx
+      ) => {
+        const state = testCase.state;
+        const {
+          expectation,
+          request
+        }: {
+          expectation: String,
+          request: Object
+        } = resourceObj.testSuite.testCases[idx];
 
-      const passed: Boolean = state === 'SUCCESS';
-      const result: String = passed ? 'PASSED' : 'FAILED';
+        const debugMessages = testCase.debugMessages;
+        const functionCalls = testCase.functionCalls;
+        const passed: Boolean = state === 'SUCCESS';
+        const result: String = passed ? 'PASSED' : 'FAILED';
 
-      return {
-        result,
-        passed,
-        state,
-        expectation,
-        request,
-        toString: () =>
-          (passed ? 'PASSED' : 'FAILED') +
-          ' ' +
-          state +
-          ' -> ' +
-          expectation +
-          ' ' +
-          JSON.stringify(request)
-      };
-    });
+        return {
+          result,
+          passed,
+          state,
+          expectation,
+          debugMessages,
+          functionCalls,
+          request,
+          toString: () => {
+            const FgRed = '\x1b[31m';
+            const FgGreen = '\x1b[32m';
+            const escapeSequence = '\x1b[0m';
+            return (
+              (passed
+                ? FgGreen + 'PASSED' + escapeSequence
+                : FgRed + 'FAILED' + escapeSequence) +
+              ' ' +
+              state +
+              ' -> ' +
+              expectation +
+              ' ' +
+              JSON.stringify(request)
+            );
+          }
+        };
+      }
+    );
 
     callback({ projectId, testResults });
   });
