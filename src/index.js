@@ -58,7 +58,8 @@ function getAuthObj(
 
 function firebaserulesTest(
   callback,
-  { authClient, projectId, source, testSuite }
+  { authClient, projectId, source, testSuite },
+  expectations
 ) {
   const firebaserules = google.firebaserules({
     version: 'v1',
@@ -71,11 +72,7 @@ function firebaserulesTest(
 
   logger({ type: 'time', msg: 'Testing rules' });
 
-  firebaserules.projects.test({ name, resource: resourceObj }, null, function(
-    error,
-    results,
-    incomingMessage
-  ) {
+  const testCallback = (error, results, incomingMessage) => {
     if (error) {
       const errMsg =
         'Error calling firebaserules API. Check project name and ' +
@@ -86,7 +83,9 @@ function firebaserulesTest(
 
     logger({ type: 'timeEnd', msg: 'Testing rules' });
 
-    const { testResults: [...testCases] } = results;
+    const {
+      testResults: [...testCases]
+    } = results;
 
     const testResults = testCases.map(
       (
@@ -110,6 +109,7 @@ function firebaserulesTest(
         const functionCalls = testCase.functionCalls;
         const passed: Boolean = state === 'SUCCESS';
         const result: String = passed ? 'PASSED' : 'FAILED';
+        const it: String = expectations[idx];
 
         return {
           result,
@@ -123,7 +123,8 @@ function firebaserulesTest(
             const FgRed = '\x1b[31m';
             const FgGreen = '\x1b[32m';
             const escapeSequence = '\x1b[0m';
-            return (
+
+            let normalMessage =
               (passed
                 ? FgGreen + 'PASSED' + escapeSequence
                 : FgRed + 'FAILED' + escapeSequence) +
@@ -132,15 +133,36 @@ function firebaserulesTest(
               ' -> ' +
               expectation +
               ' ' +
-              JSON.stringify(request)
-            );
+              JSON.stringify(request);
+
+            // If we have an "it" expectation, print it to the user
+            if (it) {
+              let verboseMessage = normalMessage;
+
+              normalMessage = passed ? FgGreen + it : FgRed + it;
+
+              // Print more verbose information if the request is failing
+              if (verboseMode && passed === false) {
+                return normalMessage + '\n' + verboseMessage;
+              }
+
+              return normalMessage;
+            }
+
+            return normalMessage;
           }
         };
       }
     );
 
     callback({ projectId, testResults });
-  });
+  };
+
+  firebaserules.projects.test(
+    { name, resource: resourceObj },
+    null,
+    testCallback
+  );
 }
 
 function testSecurityRules(
@@ -157,11 +179,29 @@ function testSecurityRules(
       return callback(authObj);
     }
 
-    return firebaserulesTest(callback, {
-      ...authObj,
-      source,
-      testSuite
+    // Build an array with our "it" expectations
+    const expectations = testSuite.testCases.map(test => {
+      return test.it;
     });
+
+    // remove the "it" from the testCases as firebase throws an errors for invalid post request
+    const testCases = testSuite.testCases.map(test => {
+      delete test.it;
+
+      return test;
+    });
+
+    testSuite.testCases = testCases;
+
+    return firebaserulesTest(
+      callback,
+      {
+        ...authObj,
+        source,
+        testSuite
+      },
+      expectations
+    );
   }
 }
 

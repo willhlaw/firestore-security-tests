@@ -64,6 +64,7 @@ var testResourceObj = {
   testSuite: {
     testCases: [
       {
+        "it": "Allow access to a single license document for authenticated users", // description of what this rule does - the description is then shown as a result on the console
         expectation: 'ALLOW', // Can be 'ALLOW' or 'DENY'
         request: {
           auth: {
